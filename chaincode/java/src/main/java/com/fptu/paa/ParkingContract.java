@@ -27,40 +27,51 @@ import java.util.List;
 @Default
 public class ParkingContract implements ContractInterface {
     private final Genson genson = new Genson();
-    private final String INDEXNAME_VALUE = "100111010010000010";
+    private final String DEFAULT_VALUE = "100111010010000010";
 
     private enum IndexName {
-        CUSTOMER_BIKE,
-        PLATENUMBER_BIKE,
+        TYPE,
         BIKE_TICKET,
+        BIKE_STATUS_TICKET,
+        NFC_TICKET,
+        NFC_STATUS_TICKET,
         OWNER_TICKET,
         TICKET_TRANSACTION;
     }
 
-    private enum BikeContractErrors {
+    private enum ParkingContractError {
         KEY_NOT_FOUND,
-        EMPTY_ARGUMENT,
-        BIKE_NOT_FOUND,
-        BIKE_ALREADY_EXISTS;
+        TICKET_NOT_FOUND;
+    }
+
+    private enum TicketStatus {
+        KEEPING,
+        CLAIMING,
+        FINISH;
     }
 
     @Transaction()
     public void initLedger(final Context ctx) {
         ChaincodeStub stub = ctx.getStub();
-        String[] bikeData = {
-                "{ \"customerID\": \"A\", \"plateNumber\": \"59P2-81240\", \"color\": \"black\", \"modelID\": \"MODEL22\", \"chassisNumber\": \"123456789\", \"status\": \"ENABLED\"}",
-                "{ \"customerID\": \"B\", \"plateNumber\": \"59P2-81241\", \"color\": \"red\", \"modelID\": \"MODEL20\", \"chassisNumber\": \"123456789\", \"status\": \"ENABLED\"}",
-                "{ \"customerID\": \"C\", \"plateNumber\": \"59P2-81242\", \"color\": \"green\", \"modelID\": \"MODEL24\", \"chassisNumber\": \"123456789\", \"status\": \"ENABLED\"}",
-                "{ \"customerID\": \"D\", \"plateNumber\": \"59P2-81243\", \"color\": \"blue\", \"modelID\": \"MODEL25\", \"chassisNumber\": \"123456789\", \"status\": \"ENABLED\"}",
-                "{ \"customerID\": \"E\", \"plateNumber\": \"59P2-81239\", \"color\": \"brown\", \"modelID\": \"MODEL26\", \"chassisNumber\": \"123456789\", \"status\": \"ENABLED\"}",
-                "{ \"customerID\": \"B\", \"plateNumber\": \"59P2-81245\", \"color\": \"white\", \"modelID\": \"MODEL27\", \"chassisNumber\": \"123456789\", \"status\": \"ENABLED\"}",
-                "{ \"customerID\": \"B\", \"plateNumber\": \"59P2-81246\", \"color\": \"gray\", \"modelID\": \"MODEL28\", \"chassisNumber\": \"123456789\", \"status\": \"ENABLED\"}",
+        System.out.println("Calling Init Function");
+        //Init sample data
+        String[] ticketData = {
+                "{ \"bikeID\": \"1\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-08:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"2\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-09:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"3\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-10:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"4\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-11:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"5\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-12:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-13:58:51:958\", \"nfcNumber\": \"123456789\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-14:58:51:958\", \"nfcNumber\": \"123456788\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-15:58:51:958\", \"nfcNumber\": \"123456786\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-16:58:51:958\", \"nfcNumber\": \"123456785\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-17:58:51:958\", \"nfcNumber\": \"123456782\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}"
         };
-
-        for (int i = 0; i < bikeData.length; i++) {
-            String bikeKey = String.format("BIKE%d", i);
-            Bike bike = genson.deserialize(bikeData[i], Bike.class);
-            createBike(ctx,bikeKey, bike.getCustomerID(), bike.getPlateNumber(), bike.getColor(), bike.getModelID(), bike.getChassisNumber(), bike.getStatus());
+//        int i = 0;
+        for (String data : ticketData) {
+            Ticket ticket = genson.deserialize(data, Ticket.class);
+//            String ticketKey = String.format("TICKET%d", ++i);
+            createTicket(ctx, ticket.getBikeID(), ticket.getNfcNumber(), ticket.getOwnerCheckInID(), ticket.getCheckinTime(), ticket.getCheckinImages()[0], ticket.getCheckinImages()[1]);
         }
     }
 
@@ -71,237 +82,204 @@ public class ParkingContract implements ContractInterface {
         if (state.isEmpty()) {
             String errorMessage = String.format("Asset %s not found", key);
             System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, BikeContractErrors.KEY_NOT_FOUND.toString());
+            throw new ChaincodeException(errorMessage, ParkingContractError.KEY_NOT_FOUND.toString());
         }
         return state;
     }
 
-    /*#################################BIKE#################################*/
     @Transaction()
-    public Bike createBike(final Context ctx, final String bikeKey,
-                           final String customerID, final String plateNumber, final String color,
-                           final String modelID, final String chassisNumber, final String status) {
+    public Ticket createTicket(final Context ctx, final String bikeID, final String nfcSerial, final String ownerCheckInID, final String checkinTime, final String checkinBikeImage, final String checkInFaceImage) {
         ArrayList<String> args = new ArrayList<>();
-        args.add(bikeKey);
-        args.add(customerID);
-        args.add(plateNumber);
-        args.add(color);
-        args.add(modelID);
-        args.add(chassisNumber);
-        args.add(status);
-        //If args not empty
-        if (checkArgs(args)) {
-            //Create stub
-            ChaincodeStub stub = ctx.getStub();
-            String bikeState = stub.getStringState(bikeKey); //key = BIKE+plateNumber
-            //Check exist bike return null
-            if (!bikeState.isEmpty()) {
-                String errorMessage = String.format("Bike %s already exists", plateNumber);
-//              System.out.println(errorMessage);
-                throw new ChaincodeException(errorMessage, BikeContractErrors.BIKE_ALREADY_EXISTS.toString());
-            }
-            //Put a new bike to blockchain
-            Bike bike = new Bike(customerID, plateNumber, color, modelID, chassisNumber, status);
-            bikeState = genson.serialize(bike);
-            stub.putStringState(bikeKey, bikeState);
-            //Create a new composite
-            //Query by customerID
-            String customerBikeIndexKey = stub.createCompositeKey(IndexName.CUSTOMER_BIKE.name(), customerID, bikeKey).toString();
-            System.out.println("customerBikeIndexKey - " + customerBikeIndexKey);
-            stub.putStringState(customerBikeIndexKey, INDEXNAME_VALUE);
-            //Query by platenumber
-            String platenumberBikeIndexKey = stub.createCompositeKey(IndexName.PLATENUMBER_BIKE.name(), plateNumber, bikeKey).toString();
-            System.out.println("platenumberBikeIndexKey - " + platenumberBikeIndexKey);
-            stub.putStringState(platenumberBikeIndexKey, INDEXNAME_VALUE);
+        boolean isNFC = false;
+        if ((bikeID.isEmpty() == true)) {
+            args.add(nfcSerial);
+            isNFC = true;
+        } else {
+            args.add(bikeID);
         }
-        return null;
-    }
-
-    //Compositekey
-//    @Transaction()
-//    public Bike createBike(final Context ctx,
-//                           final String customerID, final String plateNumber, final String color,
-//                           final String modelID, final String chassisNumber, final String status) {
-//        ArrayList<String> args = new ArrayList<>();
-//        args.add(customerID);
-//        args.add(plateNumber);
-//        args.add(color);
-//        args.add(modelID);
-//        args.add(chassisNumber);
-//        args.add(status);
-//        //If args not empty
-//        if (checkArgs(args)) {
-//            //Create stub
-//            ChaincodeStub stub = ctx.getStub();
-//            CompositeKey bikeKey = stub.createCompositeKey("BIKE",status,plateNumber);
-//            String bikeState = stub.getStringState(bikeKey.toString()); //key = BIKE+plateNumber
-//            //Check exist bike return null
-//            if (!bikeState.isEmpty()) {
-//                String errorMessage = String.format("Bike %s already exists", plateNumber);
-////              System.out.println(errorMessage);
-//                throw new ChaincodeException(errorMessage, BikeContractErrors.BIKE_ALREADY_EXISTS.toString());
-//            }
-//            //Put a new bike to blockchain
-//            Bike bike = new Bike(customerID, plateNumber, color, modelID, chassisNumber, status);
-//            bikeState = genson.serialize(bike);
-//            stub.putStringState(bikeKey.toString(), bikeState);
-//            //Create a new composite
-//            //Query by customerID
-//            String customerBikeIndexKey = stub.createCompositeKey(IndexName.CUSTOMER_BIKE.name(), customerID, bikeKey.toString()).toString();
-//            System.out.println("customerBikeIndexKey - " + customerBikeIndexKey);
-//            stub.putStringState(customerBikeIndexKey, INDEXNAME_VALUE);
-//            //Query by platenumber
-//            String platenumberBikeIndexKey = stub.createCompositeKey(IndexName.PLATENUMBER_BIKE.name(), plateNumber, bikeKey.toString()).toString();
-//            System.out.println("platenumberBikeIndexKey - " + platenumberBikeIndexKey);
-//            stub.putStringState(platenumberBikeIndexKey, INDEXNAME_VALUE);
-//        }
-//        return null;
-//    }
-
-    //Query bike by key
-    @Transaction()
-    public Bike queryBike(final Context ctx, final String key) {
-        ChaincodeStub stub = ctx.getStub();
-        String bikeState = stub.getStringState(key);
-
-        if (bikeState.isEmpty()) {
-            String errorMessage = String.format("Bike %s not found", key);
-            System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, BikeContractErrors.BIKE_NOT_FOUND.toString());
-        }
-        Bike bike = genson.deserialize(bikeState, Bike.class);
-        return bike;
-    }
-
-//    //Composite key
-//    @Transaction()
-//    public Bike queryBike(final Context ctx, final String plateNumber,final String status) {
-//        ChaincodeStub stub = ctx.getStub();
-//        CompositeKey bikeKey = stub.createCompositeKey("BIKE",status,plateNumber);
-//        String bikeState = stub.getStringState(bikeKey.toString());
-//
-//        if (bikeState.isEmpty()) {
-//            String errorMessage = String.format("Bike %s not found", bikeKey.toString());
-//            System.out.println(errorMessage);
-//            throw new ChaincodeException(errorMessage, BikeContractErrors.BIKE_NOT_FOUND.toString());
-//        }
-//        Bike bike = genson.deserialize(bikeState, Bike.class);
-//        return bike;
-//    }
-
-    //Querying a bike by plate number
-    @Transaction()
-    public Bike queryBikeByPlateNumber(final Context ctx, final String plateNumber) {
-        Bike result = null;
-        //Checking non-empty argument
-        if (plateNumber.isEmpty()) {
-            return null;
-        }
-        //System.out.println("Platenumber:  " + plateNumber);
-        //Create chaincode stub
-        ChaincodeStub stub = ctx.getStub();
-        //Get composite keys by partial part
-        // plate number
-        QueryResultsIterator<KeyValue> resultsIterator
-                = stub.getStateByPartialCompositeKey(stub.createCompositeKey(IndexName.PLATENUMBER_BIKE.name(), plateNumber).toString());
-        if (resultsIterator != null) {
-            Iterator<KeyValue> iterator = resultsIterator.iterator();
-            if (iterator.hasNext()) {
-                KeyValue keyValue = iterator.next();
-                //Split a composite key to get bikeID
-                CompositeKey compositeKey = stub.splitCompositeKey(keyValue.getKey());
-                //System.out.println("Compositekey:" + compositeKey.getObjectType() + "-" + compositeKey.getAttributes().toString());
-                String bikeID = compositeKey.getAttributes().get(1);
-
-                String bikeState = stub.getStringState(bikeID);
-                //System.out.println("Bike by platenumber:" + bikeState);
-                //Check if bike exist
-                if (bikeState.isEmpty()) {
-                    String errorMessage = String.format("Bike %s not found", bikeID);
-                    System.out.println(errorMessage);
-                    throw new ChaincodeException(errorMessage, BikeContractErrors.BIKE_NOT_FOUND.toString());
-                }
-                result = genson.deserialize(bikeState, Bike.class);
-            }
-        }
-        return result;
-    }
-
-    //Query a list of bike by customerID
-    @Transaction()
-    public String queryBikeByOwnerID(final Context ctx, final String customerID) throws Exception {
-        String reuslt = BikeContractErrors.BIKE_NOT_FOUND.name();
-        //Checking non-empty argument
-        if (customerID.isEmpty()) {
-            return BikeContractErrors.EMPTY_ARGUMENT.name();
-        }
-        System.out.println("customerID:  " + customerID);
-        //Create chaincode stub
-        ChaincodeStub stub = ctx.getStub();
-        //Get composite keys by partial part
-        //customerID
-        QueryResultsIterator<KeyValue> resultsIterator = stub.getStateByPartialCompositeKey(IndexName.CUSTOMER_BIKE.name(), customerID);
-        if (resultsIterator != null) {
-            List<Bike> bikeList = new ArrayList<>();
-            for (KeyValue keyValue : resultsIterator) {
-                //Split a composite key to get bikeID
-                CompositeKey compositeKey = stub.splitCompositeKey(keyValue.getKey());
-                String bikeID = compositeKey.getAttributes().get(1);
-
-                String bikeState = stub.getStringState(bikeID);
-                //Verify if bike exist
-                if (bikeState.isEmpty()) {
-                    String errorMessage = String.format("Bike %s not exist", bikeID);
-                    System.out.println(errorMessage);
-                    throw new ChaincodeException(errorMessage, BikeContractErrors.BIKE_NOT_FOUND.toString());
-                }
-                Bike bike = genson.deserialize(bikeState, Bike.class);
-                bikeList.add(bike);
-            }
-            reuslt = genson.serialize(bikeList);
-        }
-        return reuslt;
-    }
-
-    @Transaction()
-    public String queryAllBike(final Context ctx) {
-        String result = "";
-        ChaincodeStub stub = ctx.getStub();
-        return result;
-    }
-
-    /*#################################TICKET#################################*/
-    @Transaction()
-    public Ticket createCheckInTicket(final Context ctx, final String bikeID, final String createTime, final String checkinBikeImage, final String checkInFaceImage, final String status) {
-        ArrayList<String> args = new ArrayList<>();
-        args.add(bikeID);
-        args.add(createTime);
+        args.add(checkinTime);
         args.add(checkinBikeImage);
         args.add(checkInFaceImage);
-        args.add(status);
         //If args not empty
+        Ticket result = null;
+        System.out.println("NFC Ticket:" + isNFC + " bikeID:" + bikeID);
         if (checkArgs(args)) {
             //Create chaincode stub
             ChaincodeStub stub = ctx.getStub();
-            //Verify exist
-
+            //Create key and value
+            String ticketKey = "TICKET" + checkinTime;
+            String[] checkInImages = {checkinBikeImage, checkInFaceImage};
+            Ticket newTicket = new Ticket(bikeID, ownerCheckInID, checkinTime, nfcSerial, checkInImages, TicketStatus.KEEPING.name());
+            //Store new ticket
+            stub.putStringState(ticketKey, genson.serialize(newTicket));
+            result = newTicket;
+            //Create composite key for new ticket
+            if (!isNFC) {
+                //QUERY by BIKE ID
+                String bikeTicketIndexKey = stub.createCompositeKey(IndexName.BIKE_TICKET.name(), bikeID, ticketKey).toString();
+                System.out.println("bikeTicketIndexKey - " + bikeTicketIndexKey);
+                stub.putStringState(bikeTicketIndexKey, DEFAULT_VALUE);
+                //QUERY by BIKE ID + STATUS
+                String bikeStatusTicketIndexKey = stub.createCompositeKey(IndexName.BIKE_STATUS_TICKET.name(), TicketStatus.KEEPING.name(), bikeID, ticketKey).toString();
+                System.out.println("bikeStatusTicketIndexKey - " + bikeStatusTicketIndexKey);
+                stub.putStringState(bikeStatusTicketIndexKey, DEFAULT_VALUE);
+            } else {
+                //QUERY by NFC SERIAL
+                String nfcTicketIndexKey = stub.createCompositeKey(IndexName.NFC_TICKET.name(), nfcSerial, ticketKey).toString();
+                System.out.println("nfcTicketIndexKey - " + nfcTicketIndexKey);
+                stub.putStringState(nfcTicketIndexKey, DEFAULT_VALUE);
+                //QUERY by NFC SERIAL + STATUS
+                String nfcStatusTicketIndexKey = stub.createCompositeKey(IndexName.NFC_STATUS_TICKET.name(), TicketStatus.KEEPING.name(), nfcSerial, ticketKey).toString();
+                System.out.println("nfcStatusTicketIndexKey - " + nfcStatusTicketIndexKey);
+                stub.putStringState(nfcStatusTicketIndexKey, DEFAULT_VALUE);
+            }
+            String ticketIndexKey = stub.createCompositeKey(IndexName.TYPE.name(), "ticket", ticketKey).toString();
+            System.out.println("ticketIndexKey - " + ticketIndexKey);
+            stub.putStringState(ticketIndexKey, DEFAULT_VALUE);
         }
-        return null;
+        return result;
     }
 
-    @Transaction
-    public String updateTicketStatus(final Context ctx) {
-        return null;
+    @Transaction()
+    public String checkOutByBike(final Context ctx, final String ticketKey, final String ownerCheckOutID, final String checkOutTime, final String checkOutBikeImage, final String checkOutFaceImage, final String paymentType) {
+        String result = "Error";
+        ArrayList<String> args = new ArrayList<>();
+        args.add(ticketKey);
+        args.add(ownerCheckOutID);
+        args.add(paymentType);
+        args.add(checkOutTime);
+        args.add(checkOutBikeImage);
+        args.add(checkOutFaceImage);
+        if (checkArgs(args)) {
+            System.out.println("CHECKOUT BIKE:" + ticketKey);
+            //Create stub
+            ChaincodeStub stub = ctx.getStub();
+            //Get ticket
+            String ticketState = stub.getStringState(ticketKey);
+            Ticket ticket = genson.deserialize(ticketState, Ticket.class);
+            //Begin checkout
+            String[] checkOutImages = {checkOutBikeImage, checkOutFaceImage};
+            Ticket newTicket = new Ticket(ticket.getBikeID(), ticket.getOwnerCheckInID(), ticket.getCheckinTime(), ownerCheckOutID,
+                    checkOutTime, ticket.getNfcNumber(), paymentType,
+                    ticket.getCheckinImages(), checkOutImages, TicketStatus.FINISH.name());
+            //Store check out ticket
+            String newTicketState = genson.serialize(newTicket);
+            System.out.println("NEW State: " + newTicketState);
+            stub.putStringState(ticketKey, newTicketState);
+
+            //Begin update index key
+            boolean isNFC = false;
+            if (newTicket.getNfcNumber() != null && !newTicket.getNfcNumber().isEmpty()) {
+                isNFC = true;
+            }
+            //step 1: remove old key
+            if (!isNFC) {
+                String bikeStatusTicketIndexKey = stub.createCompositeKey(IndexName.BIKE_STATUS_TICKET.name(), TicketStatus.KEEPING.name(), newTicket.getBikeID(), ticketKey).toString();
+                System.out.println("Checkin Bike Old Key - " + bikeStatusTicketIndexKey);
+                stub.putStringState(bikeStatusTicketIndexKey, "");
+                //step 2: insert new key
+                bikeStatusTicketIndexKey = stub.createCompositeKey(IndexName.BIKE_STATUS_TICKET.name(), TicketStatus.FINISH.name(), newTicket.getBikeID(), ticketKey).toString();
+                System.out.println("Checkout Bike New Key - " + bikeStatusTicketIndexKey);
+                stub.putStringState(bikeStatusTicketIndexKey, DEFAULT_VALUE);
+            } else {
+                String nfcStatusTicketIndexKey = stub.createCompositeKey(IndexName.NFC_STATUS_TICKET.name(), TicketStatus.KEEPING.name(), newTicket.getNfcNumber(), ticketKey).toString();
+                System.out.println("Checkin NFC Old Key - " + nfcStatusTicketIndexKey);
+                stub.putStringState(nfcStatusTicketIndexKey, "");
+                //step 2: insert new key
+                nfcStatusTicketIndexKey = stub.createCompositeKey(IndexName.NFC_STATUS_TICKET.name(), TicketStatus.FINISH.name(), newTicket.getNfcNumber(), ticketKey).toString();
+                System.out.println("Checkout NFC New Key - " + nfcStatusTicketIndexKey);
+                stub.putStringState(nfcStatusTicketIndexKey, DEFAULT_VALUE);
+            }
+            //Return checkout ticket
+            result = newTicketState;
+        }
+        System.out.println("FINISH CHECKOUT");
+        return result;
     }
 
-    @Transaction
-    public String updateCheckoutImage(final Context ctx) {
-        return null;
+    @Transaction()
+    public String getCheckoutTicket(final Context ctx, final String bikeID, final String nfcSerial) {
+        String result = "Error";
+        //Create stub
+        ChaincodeStub stub = ctx.getStub();
+        QueryResultsIterator<KeyValue> queryResultsIterator;
+        if (nfcSerial != null && !nfcSerial.isEmpty()) {//CHECK NFC FIELD NOT EMPTY
+            queryResultsIterator = stub.getStateByPartialCompositeKey(IndexName.NFC_STATUS_TICKET.name(), TicketStatus.KEEPING.name(), nfcSerial);
+        } else {
+            queryResultsIterator = stub.getStateByPartialCompositeKey(IndexName.BIKE_STATUS_TICKET.name(), TicketStatus.KEEPING.name(), bikeID);
+        }
+        Iterator<KeyValue> iterator = queryResultsIterator.iterator();
+        if (iterator.hasNext()) {
+            KeyValue keyValue = iterator.next();
+            //Split composite key to get ticket key
+            //Step 1: Get composite key
+            CompositeKey compositeKey = stub.splitCompositeKey(keyValue.getKey());
+            System.out.println("getCheckoutTicketByBikeID :" + compositeKey.toString());
+            //Step 2: Get ticket key
+            String ticketKey = compositeKey.getAttributes().get(2);
+            //Get ticket
+            String ticketState = stub.getStringState(ticketKey);
+            if (ticketState.isEmpty()) {
+                String errorMessage = String.format("Ticket %s not found", ticketKey);
+                System.out.println(errorMessage);
+                throw new ChaincodeException(errorMessage, ParkingContractError.TICKET_NOT_FOUND.toString());
+            }
+            result = ticketState;
+        }
+        return result;
     }
 
-    @Transaction
-    public String queryTicketByBikeID(final Context ctx, final String bikeID) {
-        return null;
+    @Transaction()
+    public String queryTicketById(final Context ctx, final String nfcSerial, final String bikeID) {
+        String result = "Empty";
+        //Create chaincode stub
+        ChaincodeStub stub = ctx.getStub();
+        QueryResultsIterator<KeyValue> resultsIterator;
+        if (nfcSerial != null && !nfcSerial.isEmpty()) {//CHECK NFC FIELD NOT EMPTY
+            resultsIterator = stub.getStateByPartialCompositeKey(IndexName.NFC_TICKET.name(), nfcSerial);
+        } else {
+            resultsIterator = stub.getStateByPartialCompositeKey(IndexName.BIKE_TICKET.name(), bikeID);
+        }
+        if (resultsIterator != null) {
+            List<Ticket> ticketList = new ArrayList<>();
+            for (KeyValue keyValue : resultsIterator) {
+                //Split composite key to get ticket key
+                //Step 1: Get composite key
+                CompositeKey compositeKey = stub.splitCompositeKey(keyValue.getKey());
+                //Step 2: Get ticket key
+                String ticketKey = compositeKey.getAttributes().get(1);
+                //Query ticket and add to list
+                String ticketState = stub.getStringState(ticketKey);
+                Ticket ticket = genson.deserialize(ticketState, Ticket.class);
+                ticketList.add(ticket);
+            }
+            result = genson.serialize(ticketList);
+        }
+        return result;
+    }
+
+    @Transaction()
+    public String queryAllTicket(final Context ctx) {
+        String result = "Empty";
+        //Create chaincode stub
+        ChaincodeStub stub = ctx.getStub();
+        QueryResultsIterator<KeyValue> resultsIterator = stub.getStateByPartialCompositeKey(IndexName.TYPE.name(), "ticket");
+        if (resultsIterator != null) {
+            List<Ticket> ticketList = new ArrayList<>();
+            for (KeyValue keyValue : resultsIterator) {
+                //Split composite key to get ticket key
+                //Step 1: Get composite key
+                CompositeKey compositeKey = stub.splitCompositeKey(keyValue.getKey());
+                //Step 2: Get ticket key
+                String ticketKey = compositeKey.getAttributes().get(1);
+                //Query ticket and add to list
+                String ticketState = stub.getStringState(ticketKey);
+                Ticket ticket = genson.deserialize(ticketState, Ticket.class);
+                ticketList.add(ticket);
+            }
+            result = genson.serialize(ticketList);
+        }
+        return result;
     }
 
     /*#################################TRANSACTION#################################*/

@@ -131,18 +131,18 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
 	# invoke init
 	chaincodeInvoke 1 0 1 0 2
-	sleep 5
+	sleep 8
 	# Query chaincode on peer0.org1
 	echo "Querying chaincode on peer0.org1..."
-	chaincodeQuery 0 1
+	#chaincodeQuery 0 1
 
 	# Invoke chaincode on peer0.org1 and peer0.org2
 	echo "Sending invoke transaction on peer0.org1 peer0.org2..."
 	chaincodeInvoke 0 0 1 0 2
-	sleep 3
+	sleep 5
 	# Query chaincode on peer0.org1
 	echo "Querying chaincode on peer0.org1..."
-	chaincodeQuery 0 2
+	#chaincodeQuery 0 2
 
 	## Install chaincode on peer1.org2
 	#echo "Installing chaincode on peer1.org2..."

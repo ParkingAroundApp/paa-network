@@ -307,7 +307,7 @@ chaincodeQuery() {
   ORG=$2
   setGlobals $PEER $ORG
   echo "===================== Querying on peer${PEER}.org${ORG} on channel '$CHANNEL_NAME'... ===================== "
-    peer chaincode query -C $CHANNEL_NAME -n mycc -c '{"function": "queryBike","Args":["BIKE0"]}' >&log.txt
+    peer chaincode query -C $CHANNEL_NAME -n mycc -c '{"function": "queryByKey","Args":["TICKET1"]}' >&log.txt
     echo "===================== Query successful on peer${PEER}.org${ORG} on channel '$CHANNEL_NAME' ===================== "
 }
 

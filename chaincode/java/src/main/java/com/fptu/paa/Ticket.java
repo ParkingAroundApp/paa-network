@@ -4,6 +4,7 @@ import com.owlike.genson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,28 +12,61 @@ import java.util.Objects;
 public class Ticket {
     @Property
     private String bikeID;
+
     @Property
-    private String createTime;
+    private String ownerCheckInID;
+
     @Property
-    private List checkinImages;
+    private String checkinTime;
+
     @Property
-    private List checkoutImages;
+    private String ownerCheckOutID;
+
+    @Property
+    private String checkoutTime;
+
+    @Property
+    private String nfcNumber;
+
+    @Property
+    private String paymentType;
+
+    @Property
+    private String[] checkinImages;
+
+    @Property
+    private String[] checkoutImages;
+
     @Property
     private String status;
-    @Property
-    private String ownerID;
 
     public Ticket() {
     }
 
-    public Ticket(@JsonProperty("bikeID") String bikeID,@JsonProperty("createTime") String createTime,@JsonProperty("checkinImages") List checkinImages,
-                  @JsonProperty("checkoutImages")List checkoutImages,@JsonProperty("status") String status,@JsonProperty("ownerID") String ownerID) {
+    public Ticket(@JsonProperty("bikeID") String bikeID, @JsonProperty("ownerCheckInID") String ownerCheckInID, @JsonProperty("checkinTime") String checkinTime,
+                  @JsonProperty("nfcNumber") String nfcNumber, @JsonProperty("checkinImages") String[] checkinImages, @JsonProperty("status") String status) {
         this.bikeID = bikeID;
-        this.createTime = createTime;
+        this.ownerCheckInID = ownerCheckInID;
+        this.checkinTime = checkinTime;
+        this.nfcNumber = nfcNumber;
+        this.checkinImages = checkinImages;
+        this.status = status;
+    }
+
+    public Ticket(@JsonProperty("bikeID") String bikeID, @JsonProperty("ownerCheckInID") String ownerCheckInID, @JsonProperty("checkinTime") String checkinTime,
+                  @JsonProperty("ownerCheckOutID") String ownerCheckOutID, @JsonProperty("checkoutTime") String checkoutTime, @JsonProperty("nfcNumber") String nfcNumber,
+                  @JsonProperty("paymentType") String paymentType, @JsonProperty("checkinImages") String[] checkinImages,
+                  @JsonProperty("checkoutImages") String[] checkoutImages, @JsonProperty("status") String status) {
+        this.bikeID = bikeID;
+        this.ownerCheckInID = ownerCheckInID;
+        this.checkinTime = checkinTime;
+        this.ownerCheckOutID = ownerCheckOutID;
+        this.checkoutTime = checkoutTime;
+        this.nfcNumber = nfcNumber;
+        this.paymentType = paymentType;
         this.checkinImages = checkinImages;
         this.checkoutImages = checkoutImages;
         this.status = status;
-        this.ownerID = ownerID;
     }
 
     public String getBikeID() {
@@ -43,27 +77,67 @@ public class Ticket {
         this.bikeID = bikeID;
     }
 
-    public String getCreateTime() {
-        return createTime;
+    public String getOwnerCheckInID() {
+        return ownerCheckInID;
     }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
+    public void setOwnerCheckInID(String ownerCheckInID) {
+        this.ownerCheckInID = ownerCheckInID;
     }
 
-    public List getCheckinImages() {
+    public String getCheckinTime() {
+        return checkinTime;
+    }
+
+    public void setCheckinTime(String checkinTime) {
+        this.checkinTime = checkinTime;
+    }
+
+    public String getOwnerCheckOutID() {
+        return ownerCheckOutID;
+    }
+
+    public void setOwnerCheckOutID(String ownerCheckOutID) {
+        this.ownerCheckOutID = ownerCheckOutID;
+    }
+
+    public String getCheckoutTime() {
+        return checkoutTime;
+    }
+
+    public void setCheckoutTime(String checkoutTime) {
+        this.checkoutTime = checkoutTime;
+    }
+
+    public String getNfcNumber() {
+        return nfcNumber;
+    }
+
+    public void setNfcNumber(String nfcNumber) {
+        this.nfcNumber = nfcNumber;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public String[] getCheckinImages() {
         return checkinImages;
     }
 
-    public void setCheckinImages(List checkinImages) {
+    public void setCheckinImages(String[] checkinImages) {
         this.checkinImages = checkinImages;
     }
 
-    public List getCheckoutImages() {
+    public String[] getCheckoutImages() {
         return checkoutImages;
     }
 
-    public void setCheckoutImages(List checkoutImages) {
+    public void setCheckoutImages(String[] checkoutImages) {
         this.checkoutImages = checkoutImages;
     }
 
@@ -75,41 +149,44 @@ public class Ticket {
         this.status = status;
     }
 
-    public String getOwnerID() {
-        return ownerID;
-    }
-
-    public void setOwnerID(String ownerID) {
-        this.ownerID = ownerID;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ticket ticket = (Ticket) o;
-        return Objects.equals(getBikeID(), ticket.getBikeID()) &&
-                Objects.equals(getCreateTime(), ticket.getCreateTime()) &&
-                Objects.equals(getCheckinImages(), ticket.getCheckinImages()) &&
-                Objects.equals(getCheckoutImages(), ticket.getCheckoutImages()) &&
-                Objects.equals(getStatus(), ticket.getStatus()) &&
-                Objects.equals(getOwnerID(), ticket.getOwnerID());
+        return getBikeID().equals(ticket.getBikeID()) &&
+                getOwnerCheckInID().equals(ticket.getOwnerCheckInID()) &&
+                getCheckinTime().equals(ticket.getCheckinTime()) &&
+                Objects.equals(getOwnerCheckOutID(), ticket.getOwnerCheckOutID()) &&
+                Objects.equals(getCheckoutTime(), ticket.getCheckoutTime()) &&
+                getNfcNumber().equals(ticket.getNfcNumber()) &&
+                Objects.equals(getPaymentType(), ticket.getPaymentType()) &&
+                Arrays.equals(getCheckinImages(), ticket.getCheckinImages()) &&
+                Arrays.equals(getCheckoutImages(), ticket.getCheckoutImages()) &&
+                getStatus().equals(ticket.getStatus());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getBikeID(), getCreateTime(), getCheckinImages(), getCheckoutImages(), getStatus(), getOwnerID());
+        int result = Objects.hash(getBikeID(), getOwnerCheckInID(), getCheckinTime(), getOwnerCheckOutID(), getCheckoutTime(), getNfcNumber(), getPaymentType(), getStatus());
+        result = 31 * result + Arrays.hashCode(getCheckinImages());
+        result = 31 * result + Arrays.hashCode(getCheckoutImages());
+        return result;
     }
 
     @Override
     public String toString() {
         return "Ticket{" +
                 "bikeID='" + bikeID + '\'' +
-                ", createTime='" + createTime + '\'' +
-                ", checkinImages=" + checkinImages +
-                ", checkoutImages=" + checkoutImages +
+                ", ownerCheckInID='" + ownerCheckInID + '\'' +
+                ", checkinTime='" + checkinTime + '\'' +
+                ", ownerCheckOutID='" + ownerCheckOutID + '\'' +
+                ", checkoutTime='" + checkoutTime + '\'' +
+                ", nfcNumber='" + nfcNumber + '\'' +
+                ", paymentType='" + paymentType + '\'' +
+                ", checkinImages=" + Arrays.toString(checkinImages) +
+                ", checkoutImages=" + Arrays.toString(checkoutImages) +
                 ", status='" + status + '\'' +
-                ", ownerID='" + ownerID + '\'' +
                 '}';
     }
 }

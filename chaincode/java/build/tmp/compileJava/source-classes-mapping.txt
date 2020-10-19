@@ -2,9 +2,8 @@ com/fptu/paa/TicketTransaction.java
  com.fptu.paa.TicketTransaction
 com/fptu/paa/Ticket.java
  com.fptu.paa.Ticket
-com/fptu/paa/Bike.java
- com.fptu.paa.Bike
 com/fptu/paa/ParkingContract.java
  com.fptu.paa.ParkingContract
- com.fptu.paa.ParkingContract$BikeContractErrors
  com.fptu.paa.ParkingContract$IndexName
+ com.fptu.paa.ParkingContract$ParkingContractError
+ com.fptu.paa.ParkingContract$TicketStatus
