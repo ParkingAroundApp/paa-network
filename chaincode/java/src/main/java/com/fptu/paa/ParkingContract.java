@@ -105,7 +105,7 @@ public class ParkingContract implements ContractInterface {
             //Create chaincode stub
             ChaincodeStub stub = ctx.getStub();
             //Create key and value
-            String ticketKey = "TICKET" + checkinTime;
+            String ticketKey = isNFC ? ("TICKET" + "_" + checkinTime + "_" + nfcSerial) : ("TICKET" + "_" + checkinTime + "_" + bikeID);
             String[] checkInImages = {checkinBikeImage, checkInFaceImage};
             Ticket newTicket = new Ticket(bikeID, ownerCheckInID, checkinTime, nfcSerial, checkInImages, TicketStatus.KEEPING.name());
             //Store new ticket
@@ -113,11 +113,11 @@ public class ParkingContract implements ContractInterface {
             result = newTicket;
             //Create composite key for new ticket
             if (!isNFC) {
-                //QUERY by BIKE ID
+                //QUERY by BIKE ID (list)
                 String bikeTicketIndexKey = stub.createCompositeKey(IndexName.BIKE_TICKET.name(), bikeID, ticketKey).toString();
                 System.out.println("bikeTicketIndexKey - " + bikeTicketIndexKey);
                 stub.putStringState(bikeTicketIndexKey, DEFAULT_VALUE);
-                //QUERY by BIKE ID + STATUS
+                //QUERY by BIKE ID + STATUS (List+single)
                 String bikeStatusTicketIndexKey = stub.createCompositeKey(IndexName.BIKE_STATUS_TICKET.name(), TicketStatus.KEEPING.name(), bikeID, ticketKey).toString();
                 System.out.println("bikeStatusTicketIndexKey - " + bikeStatusTicketIndexKey);
                 stub.putStringState(bikeStatusTicketIndexKey, DEFAULT_VALUE);
@@ -131,6 +131,7 @@ public class ParkingContract implements ContractInterface {
                 System.out.println("nfcStatusTicketIndexKey - " + nfcStatusTicketIndexKey);
                 stub.putStringState(nfcStatusTicketIndexKey, DEFAULT_VALUE);
             }
+            //Query by type ticket
             String ticketIndexKey = stub.createCompositeKey(IndexName.TYPE.name(), "ticket", ticketKey).toString();
             System.out.println("ticketIndexKey - " + ticketIndexKey);
             stub.putStringState(ticketIndexKey, DEFAULT_VALUE);
@@ -155,7 +156,7 @@ public class ParkingContract implements ContractInterface {
             String ticketState = stub.getStringState(ticketKey);
             Ticket ticket = genson.deserialize(ticketState, Ticket.class);
             //Verified if this bike is parking
-            if (ticket.getStatus().equals(TicketStatus.KEEPING)) {
+            if (ticket.getStatus().equals(TicketStatus.KEEPING.name())) {
                 System.out.println("CHECKOUT BIKE:" + ticketKey);
                 //Begin checkout
                 String[] checkOutImages = {checkOutBikeImage, checkOutFaceImage};
