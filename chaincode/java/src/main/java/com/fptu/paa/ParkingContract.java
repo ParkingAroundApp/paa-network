@@ -32,10 +32,10 @@ public class ParkingContract implements ContractInterface {
     private enum IndexName {
         TYPE,
         BIKE_TICKET,
+        CUSTOMER_TICKET,
         BIKE_STATUS_TICKET,
         NFC_TICKET,
         NFC_STATUS_TICKET,
-        OWNER_TICKET,
         TICKET_TRANSACTION;
     }
 
@@ -69,7 +69,7 @@ public class ParkingContract implements ContractInterface {
 //        };
 //        for (String data : ticketData) {
 //            Ticket ticket = genson.deserialize(data, Ticket.class);
-//            createTicket(ctx, ticket.getBikeID(), ticket.getNfcNumber(), ticket.getOwnerCheckInID(), ticket.getCheckinTime(), ticket.getCheckinImages()[0], ticket.getCheckinImages()[1]);
+//            createTicket(ctx, ticket.getBikeID(), ticket.getNfcNumber(), "9", ticket.getOwnerCheckInID(), ticket.getCheckinTime(), ticket.getCheckinImages()[0], ticket.getCheckinImages()[1]);
 //        }
     }
 
@@ -86,7 +86,8 @@ public class ParkingContract implements ContractInterface {
     }
 
     @Transaction()
-    public Ticket createTicket(final Context ctx, final String bikeID, final String nfcSerial, final String ownerCheckInID, final String checkinTime, final String checkinBikeImage, final String checkInFaceImage) {
+    public Ticket createTicket(final Context ctx, final String bikeID, final String nfcSerial, final String customerID,
+                               final String ownerCheckInID, final String checkinTime, final String checkinBikeImage, final String checkInFaceImage) {
         ArrayList<String> args = new ArrayList<>();
         boolean isNFC = false;
         if ((bikeID.isEmpty() == true)) {
@@ -94,7 +95,9 @@ public class ParkingContract implements ContractInterface {
             isNFC = true;
         } else {
             args.add(bikeID);
+            args.add(customerID);
         }
+        args.add(ownerCheckInID);
         args.add(checkinTime);
         args.add(checkinBikeImage);
         args.add(checkInFaceImage);
@@ -121,6 +124,10 @@ public class ParkingContract implements ContractInterface {
                 String bikeStatusTicketIndexKey = stub.createCompositeKey(IndexName.BIKE_STATUS_TICKET.name(), TicketStatus.KEEPING.name(), bikeID, ticketKey).toString();
                 System.out.println("bikeStatusTicketIndexKey - " + bikeStatusTicketIndexKey);
                 stub.putStringState(bikeStatusTicketIndexKey, DEFAULT_VALUE);
+                //QUERY by CUSTOMER ID (List)
+                String customerTicketIndexKey = stub.createCompositeKey(IndexName.CUSTOMER_TICKET.name(), customerID, ticketKey).toString();
+                System.out.println("customerTicketIndexKey - " + customerTicketIndexKey);
+                stub.putStringState(customerTicketIndexKey, DEFAULT_VALUE);
             } else {
                 //QUERY by NFC SERIAL
                 String nfcTicketIndexKey = stub.createCompositeKey(IndexName.NFC_TICKET.name(), nfcSerial, ticketKey).toString();
@@ -242,6 +249,30 @@ public class ParkingContract implements ContractInterface {
         } else {
             resultsIterator = stub.getStateByPartialCompositeKey(IndexName.BIKE_TICKET.name(), bikeID);
         }
+        if (resultsIterator != null) {
+            List<Ticket> ticketList = new ArrayList<>();
+            for (KeyValue keyValue : resultsIterator) {
+                //Split composite key to get ticket key
+                //Step 1: Get composite key
+                CompositeKey compositeKey = stub.splitCompositeKey(keyValue.getKey());
+                //Step 2: Get ticket key
+                String ticketKey = compositeKey.getAttributes().get(1);
+                //Query ticket and add to list
+                String ticketState = stub.getStringState(ticketKey);
+                Ticket ticket = genson.deserialize(ticketState, Ticket.class);
+                ticketList.add(ticket);
+            }
+            result = genson.serialize(ticketList);
+        }
+        return result;
+    }
+
+    @Transaction()
+    public String queryTicketByCustomer(final Context ctx, final String customerID) {
+        String result = "Empty";
+        //Create chaincode stub
+        ChaincodeStub stub = ctx.getStub();
+        QueryResultsIterator<KeyValue> resultsIterator = stub.getStateByPartialCompositeKey(IndexName.CUSTOMER_TICKET.name(), customerID);
         if (resultsIterator != null) {
             List<Ticket> ticketList = new ArrayList<>();
             for (KeyValue keyValue : resultsIterator) {
