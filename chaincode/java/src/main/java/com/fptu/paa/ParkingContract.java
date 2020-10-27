@@ -55,22 +55,22 @@ public class ParkingContract implements ContractInterface {
         ChaincodeStub stub = ctx.getStub();
         System.out.println("Calling Init Function");
         //Init sample data
-        String[] ticketData = {
-                "{ \"bikeID\": \"1\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-08:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"2\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-09:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"3\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-10:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"4\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-11:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"5\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-12:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-13:58:51:958\", \"nfcNumber\": \"123456789\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-14:58:51:958\", \"nfcNumber\": \"123456788\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-15:58:51:958\", \"nfcNumber\": \"123456786\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-16:58:51:958\", \"nfcNumber\": \"123456785\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-17:58:51:958\", \"nfcNumber\": \"123456782\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}"
-        };
-        for (String data : ticketData) {
-            Ticket ticket = genson.deserialize(data, Ticket.class);
-            createTicket(ctx, ticket.getBikeID(), ticket.getNfcNumber(), ticket.getOwnerCheckInID(), ticket.getCheckinTime(), ticket.getCheckinImages()[0], ticket.getCheckinImages()[1]);
-        }
+//        String[] ticketData = {
+//                "{ \"bikeID\": \"1\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-08:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"2\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-09:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"3\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-10:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"4\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-11:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"5\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-12:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-13:58:51:958\", \"nfcNumber\": \"123456789\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-14:58:51:958\", \"nfcNumber\": \"123456788\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-15:58:51:958\", \"nfcNumber\": \"123456786\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-16:58:51:958\", \"nfcNumber\": \"123456785\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-17:58:51:958\", \"nfcNumber\": \"123456782\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}"
+//        };
+//        for (String data : ticketData) {
+//            Ticket ticket = genson.deserialize(data, Ticket.class);
+//            createTicket(ctx, ticket.getBikeID(), ticket.getNfcNumber(), ticket.getOwnerCheckInID(), ticket.getCheckinTime(), ticket.getCheckinImages()[0], ticket.getCheckinImages()[1]);
+//        }
     }
 
     @Transaction()
@@ -140,7 +140,7 @@ public class ParkingContract implements ContractInterface {
     }
 
     @Transaction()
-    public String checkOutByBike(final Context ctx, final String ticketKey, final String ownerCheckOutID, final String checkOutTime, final String checkOutBikeImage, final String checkOutFaceImage, final String paymentType) {
+    public String checkOut(final Context ctx, final String ticketKey, final String ownerCheckOutID, final String checkOutTime, final String checkOutBikeImage, final String checkOutFaceImage, final String paymentType) {
         String result = "Error";
         ArrayList<String> args = new ArrayList<>();
         args.add(ticketKey);
