@@ -49,22 +49,22 @@ public class ParkingContract implements ContractInterface {
     public void initLedger(final Context ctx) {
         System.out.println("Calling Init Function");
         //Init sample data
-        String[] ticketData = {
-                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81240\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-08:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81241\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"18/10/2020-09:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81242\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"19/10/2020-10:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81243\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"20/10/2020-11:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81250\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"21/10/2020-12:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81251\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-13:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:02\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81252\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-14:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:03\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81255\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-15:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:04\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81256\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-16:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:05\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
-                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81260\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-17:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:06\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}"
-        };
-        for (String data : ticketData) {
-            Ticket ticket = genson.deserialize(data, Ticket.class);
-            createTicket(ctx, ticket.getLicensePlate(), ticket.getBikeID(), ticket.getNfcNumber(), "9", ticket.getOwnerCheckInID(), ticket.getCheckinTime(), ticket.getCheckinImages()[0], ticket.getCheckinImages()[1]);
-        }
+//        String[] ticketData = {
+//                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81240\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-08:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81241\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"18/10/2020-09:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81242\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"19/10/2020-10:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81243\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"20/10/2020-11:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"1\",\"licensePlate\": \"59P2-81250\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"21/10/2020-12:58:51:958\", \"nfcNumber\": \"\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81251\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-13:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:02\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81252\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-14:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:03\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81255\", \"ownerCheckInID\": \"1\", \"checkinTime\": \"17/10/2020-15:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:04\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81256\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-16:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:05\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}",
+//                "{ \"bikeID\": \"\",\"licensePlate\": \"59P2-81260\", \"ownerCheckInID\": \"2\", \"checkinTime\": \"17/10/2020-17:58:51:958\", \"nfcNumber\": \"89:20:a7:c2:06\",\"checkinImages\":[\"idPlateImage\",\"idFaceImage\"]}"
+//        };
+//        for (String data : ticketData) {
+//            Ticket ticket = genson.deserialize(data, Ticket.class);
+//            createTicket(ctx, ticket.getLicensePlate(), ticket.getBikeID(), ticket.getNfcNumber(), "9", ticket.getOwnerCheckInID(), ticket.getCheckinTime(), ticket.getCheckinImages()[0], ticket.getCheckinImages()[1]);
+//        }
     }
 
     @Transaction()
