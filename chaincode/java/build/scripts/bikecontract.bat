@@ -82,7 +82,7 @@ set CMD_LINE_ARGS=%*
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\bikecontract-1.0-SNAPSHOT.jar;%APP_HOME%\lib\genson-1.5.jar
+set CLASSPATH=%APP_HOME%\lib\bikecontract-1.0-SNAPSHOT.jar;%APP_HOME%\lib\json-20160810.jar;%APP_HOME%\lib\genson-1.5.jar
 
 
 @rem Execute bikecontract

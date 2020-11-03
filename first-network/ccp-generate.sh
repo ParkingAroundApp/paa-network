@@ -81,4 +81,4 @@ CAPORT2=8054
 PEERPEM2=crypto-config/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
 CAPEM2=crypto-config/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem
 
-echo "$(json_ccp_custom $ORG1 $P0PORT1 $P1PORT1 $CAPORT1 $PEERPEM1 $CAPEM1 $ORG2 $P0PORT2 $P1PORT2 $CAPORT2 $PEERPEM2 $CAPEM2)" > connection-custom.json
+echo "$(json_ccp_custom $ORG1 $P0PORT1 $P1PORT1 $CAPORT1 $PEERPEM1 $CAPEM1 $ORG2 $P0PORT2 $P1PORT2 $CAPORT2 $PEERPEM2 $CAPEM2)" > connection.json

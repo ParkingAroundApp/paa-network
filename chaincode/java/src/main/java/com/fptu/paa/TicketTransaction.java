@@ -16,11 +16,11 @@ public class TicketTransaction {
     private String createTime;
 
     @Property
-    private String type;
-
-    @Property
     private String amount;
 
     @Property
     private String status;
+
+    @Property
+    private String type;
 }
