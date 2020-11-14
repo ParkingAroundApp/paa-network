@@ -1,0 +1,8 @@
+{
+  "index":{
+      "fields":["licensePlate","checkinTime", "type"]
+  },
+  "ddoc":"indexTicket2Doc",
+  "name":"indexTicket2",
+  "type":"json"
+}

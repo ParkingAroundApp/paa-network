@@ -1,0 +1,8 @@
+{
+  "index":{
+      "fields":["checkinTime", "type"]
+  },
+  "ddoc":"indexTicket1Doc",
+  "name":"indexTicket1",
+  "type":"json"
+}

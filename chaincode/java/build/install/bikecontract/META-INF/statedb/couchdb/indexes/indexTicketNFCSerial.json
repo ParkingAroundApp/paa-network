@@ -1,0 +1,8 @@
+{
+  "index":{
+      "fields":["nfcNumber","checkinTime", "type"]
+  },
+  "ddoc":"indexTicket3Doc", 
+  "name":"indexTicket3",
+  "type":"json"
+}

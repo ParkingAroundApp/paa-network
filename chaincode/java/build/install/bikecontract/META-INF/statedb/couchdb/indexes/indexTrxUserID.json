@@ -1,0 +1,10 @@
+{
+   "index":{
+      "fields":[
+         "userID","createTime","type"
+      ]
+   },
+   "ddoc":"indexTransactionDoc",
+   "name":"indexTransaction",
+   "type":"json"
+}
