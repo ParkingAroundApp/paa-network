@@ -4,7 +4,7 @@
          "userID","createTime","type"
       ]
    },
-   "ddoc":"indexTransactionDoc",
-   "name":"indexTransaction",
+   "ddoc":"indexTransaction2Doc",
+   "name":"indexTransaction2",
    "type":"json"
 }

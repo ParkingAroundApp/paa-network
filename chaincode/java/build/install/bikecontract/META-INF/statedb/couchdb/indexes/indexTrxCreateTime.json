@@ -4,7 +4,7 @@
          "createTime","transactionType","type"
       ]
    },
-   "ddoc":"indexTransactionDoc",
-   "name":"indexTransaction",
+   "ddoc":"indexTransaction1Doc",
+   "name":"indexTransaction1",
    "type":"json"
 }
