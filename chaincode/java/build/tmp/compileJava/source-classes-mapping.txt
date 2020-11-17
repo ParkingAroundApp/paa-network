@@ -1,9 +1,9 @@
+com/fptu/paa/TicketQueryResult.java
+ com.fptu.paa.TicketQueryResult
 com/fptu/paa/Ticket.java
  com.fptu.paa.Ticket
 com/fptu/paa/ParkingTransaction.java
  com.fptu.paa.ParkingTransaction
-com/fptu/paa/TicketQueryResult.java
- com.fptu.paa.TicketQueryResult
 com/fptu/paa/ParkingContract.java
  com.fptu.paa.ParkingContract
  com.fptu.paa.ParkingContract$IndexName
