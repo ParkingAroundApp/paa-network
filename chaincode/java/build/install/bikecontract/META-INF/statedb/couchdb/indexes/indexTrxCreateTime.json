@@ -1,10 +1,16 @@
 {
-   "index":{
-      "fields":[
-         "createTime","transactionType","type"
-      ]
-   },
-   "ddoc":"indexTransaction1Doc",
-   "name":"indexTransaction1",
-   "type":"json"
+  "index": {
+    "partial_filter_selector": {
+      "type": {
+        "$eq": "transaction"
+      }
+    },
+    "fields": [
+      "createTime",
+      "transactionType"
+    ]
+  },
+  "ddoc": "indexTransaction1Doc",
+  "name": "indexTransaction1",
+  "type": "json"
 }

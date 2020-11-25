@@ -1,7 +1,12 @@
 {
    "index":{
+      "partial_filter_selector": {
+         "type": {
+            "$eq": "transaction"
+         }
+      },
       "fields":[
-         "userID","createTime","type"
+         "userID","createTime"
       ]
    },
    "ddoc":"indexTransaction2Doc",

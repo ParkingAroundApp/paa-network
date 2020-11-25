@@ -1,0 +1,18 @@
+{
+  "index": {
+    "partial_filter_selector": {
+      "status": {
+        "$eq": "KEEPING"
+      },
+      "type": {
+        "$eq": "ticket"
+      }
+    },
+    "fields": [
+      "nfcNumber"
+    ]
+  },
+  "ddoc": "indexTicket4Doc",
+  "name": "indexTicket4",
+  "type": "json"
+}

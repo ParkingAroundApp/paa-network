@@ -1,7 +1,7 @@
-com/fptu/paa/TicketQueryResult.java
- com.fptu.paa.TicketQueryResult
 com/fptu/paa/ParkingTransaction.java
  com.fptu.paa.ParkingTransaction
+com/fptu/paa/ResponseMetaData.java
+ com.fptu.paa.ResponseMetaData
 com/fptu/paa/Ticket.java
  com.fptu.paa.Ticket
 com/fptu/paa/ParkingContract.java
