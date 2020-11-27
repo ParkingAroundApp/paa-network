@@ -2,17 +2,17 @@
   "index": {
     "partial_filter_selector": {
       "status": {
-        "$eq": "KEEPING"
+        "$eq": "CLAIMING"
       },
       "type": {
         "$eq": "ticket"
       }
     },
     "fields": [
-      "nfcNumber","bikeID"
+      "reportTime"
     ]
   },
-  "ddoc": "indexTicket4Doc",
-  "name": "indexTicket4",
+  "ddoc": "indexTicket5Doc",
+  "name": "indexTicket5",
   "type": "json"
 }
